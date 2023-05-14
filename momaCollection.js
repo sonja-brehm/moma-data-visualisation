@@ -1,4 +1,4 @@
-//console.log("Hello World.");
+//set initial variables
 var paper = Snap("#svgContainer");
 
 var paperWidth = window.innerWidth;
@@ -21,7 +21,7 @@ function init() {
   drawStartScreen();
 }
 
-//Wie viele Kunstwerke sind in welchem Department?
+//Counts how many artworks are in which department and saves it in the departmentCountArray
 function sortDepartments() {
   for (let i = 0; i < data.length; i++) {
     switch (data[i]["department"]) {
@@ -44,7 +44,7 @@ function sortDepartments() {
   }
 }
 
-//die Daten aufräumen
+//clean the data (delete objects with undefined attributes)
 function clean() {
   for (var i = 0; i < data.length; i++) {
     if (data[i].width == null ||
@@ -60,12 +60,11 @@ function clean() {
       data[i].acquisitionYear == undefined ||
       data[i].acquisitionYear == 0) {
       data.splice(i, 1);
-      //da Objekte hochrücken, z.B. 5=eine Niete, Objekt 6 wird zu 5
-      i--;
+      i--; //as objects move up, e.g. if object 5 is deleted, object 6 becomes 5
     }
   }
 
-  //Aufräumen von Date + Falsch Formatierte Dates korrigieren
+  //clean up date + correct incorrectly formatted dates
   for (var i = 0; i < data.length; i++) {
     if (data[i].date == null || data[i].date < 1800 || isNaN(data[i].date) === true || data[i]["date"] == undefined || data[i]["date"] === "") {
       data.splice(i, 1);
@@ -85,7 +84,7 @@ function clean() {
   }
 }
 
-//Für falsch formatierete Dates
+//function for incorrectly formatted dates
 function isDigit(input) {
   input = input.toString();
   var digitChars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -100,50 +99,51 @@ function isDigit(input) {
   return isDigit;
 }
 
-//um alle Elemente vom Paper zu entfernen
+//function to remove all elements from the paper (needed when we open a new visualisation screen)
 function deleteAll() {
   paper.selectAll("*").remove();
 }
 
-//den ersten Screen zeichnen
+//draw the start screen
 function drawStartScreen() {
   let totalRects = 0;
   for (let i = 0; i < departmentCountArray.length; i++) { // departmentCountArray.length = 4
-    departmentCountArraySplit[i] = Math.round(departmentCountArray[i] / 10); //1 rechteck für 10 Kunstwerke
-    totalRects += departmentCountArraySplit[i]; //wegen eventueller rundungsfehler
+    departmentCountArraySplit[i] = Math.round(departmentCountArray[i] / 10); //calculate 1 rectangle for 10 artworks
+    totalRects += departmentCountArraySplit[i];
   }
 
-  const blockMargin = paperWidth * 0.03; //Abstand zwischen den Blöcken
-  const totalMargin = (departmentCountArray.length - 1) * blockMargin; //Abstand insgesamt
-  const rectSize = (paperHeight * (paperWidth - totalMargin) / totalRects); //Flächeninhalt der Quadrate
-  const rectEdgeLength = Math.sqrt(rectSize); //Kantenlänge der Quadrate
+  const blockMargin = paperWidth * 0.03; //distance between the blocks
+  const totalMargin = (departmentCountArray.length - 1) * blockMargin;
+  const rectSize = (paperHeight * (paperWidth - totalMargin) / totalRects); //calculate the size of the rectangles
+  const rectEdgeLength = Math.sqrt(rectSize); //edge length of the rectangles
 
-  const rectsPerCol = Math.floor((totalRects) / ((paperWidth - totalMargin) / rectEdgeLength)); //Rechtecke pro Spalte
+  const rectsPerCol = Math.floor((totalRects) / ((paperWidth - totalMargin) / rectEdgeLength)); //Rectangles per column
 
 
-  let colsPerBlock = []; //Wie viele Cols hat ein Block?
-  for (let i = 0; i < departmentCountArray.length; i++) { // departmentCountArray.length = 4
+  let colsPerBlock = []; //How many columns does a block have?
+  for (let i = 0; i < departmentCountArray.length; i++) {
     colsPerBlock.push(Math.ceil(departmentCountArraySplit[i] / rectsPerCol) - 1);
   }
 
   let xOffset = 0;
-  for (let i = 0; i < departmentCountArray.length; i++) { // departmentCountArray.length = 4
+  //set colour for each block
+  for (let i = 0; i < departmentCountArray.length; i++) {
     let color = colorBright[i];
+    //Calculate x and y pos for blocks
     for (let j = 0; j < departmentCountArraySplit[i]; j++) {
-
       let yPos = (j % rectsPerCol) * rectEdgeLength;
       let xPos = xOffset + Math.floor(j / rectsPerCol) * rectEdgeLength;
 
-      paper.rect(xPos, yPos, rectEdgeLength * 0.50, rectEdgeLength * 0.50).attr({ // 0.50 für den Abstand zwischen den Rechtecken
+      //draw rectangles
+      paper.rect(xPos, yPos, rectEdgeLength * 0.50, rectEdgeLength * 0.50).attr({ // 0.50 for the space between the rectangles
         fill: color
       });
     }
-    xOffset += (colsPerBlock[i] * rectEdgeLength) + blockMargin;
-    // Offset = wie viel der nächste Block auf der x-Achse verschoben werden muss
+    xOffset += (colsPerBlock[i] * rectEdgeLength) + blockMargin; // Offset = how much the next block on the x-axis must be moved
   }
 
 
-  //Klickbare Quadrate für Height&Width Darstellung (Rechtecke unten)
+//Transparent clickable rectangles to get to the dimensions screen (rectangles at the bottom)
   var rectArrayDimensions = [];
   for (var i = 0; i < departmentCountArray.length; i++) {
     var xPos = 0;
@@ -163,7 +163,7 @@ function drawStartScreen() {
   }
 
 
-  //Klickbare Quadrate für Date Darstellung (Rechtecke oben)
+//Transparent clickable rectangles to get to the date screen (rectangles at the top)
   var rectArrayDates = [];
   for (var i = 0; i < departmentCountArray.length; i++) {
     var xPos = 0;
@@ -183,11 +183,12 @@ function drawStartScreen() {
   }
 }
 
+//function to draw the date screen
 function drawDates(index) {
   deleteAll();
   var department = possibleDepartments[index];
 
-  //Draw Dates für Department Architektur & Design
+  //draw dates for department Architecture & Design
   if (department == "Architecture & Design") {
     for (var i = 0; i < data.length; i++) {
       if (data[i].department == "Architecture & Design") {
@@ -204,7 +205,7 @@ function drawDates(index) {
     }
   }
 
-  //Draw Dates für Department Drawings
+  //draw dates for department Drawings
   if (department === "Drawings") {
     for (var i = 0; i < data.length; i++) {
       if (data[i].department == "Drawings") {
@@ -221,7 +222,7 @@ function drawDates(index) {
     }
   }
 
-  //Draw Dates für Department Painting & Sculpture
+  //draw dates for department Painting & Sculpture
   if (department === "Painting & Sculpture") {
     for (var i = 0; i < data.length; i++) {
       if (data[i].department == "Painting & Sculpture") {
@@ -238,7 +239,7 @@ function drawDates(index) {
     }
   }
 
-  //Draw Dates für Department Photography
+  //draw dates for department Photography
   if (department === "Photography") {
     for (var i = 0; i < data.length; i++) {
       if (data[i].department == "Photography") {
@@ -255,7 +256,7 @@ function drawDates(index) {
     }
   }
 
-  //ZURÜCK
+  //Go back (trnsparent clickable rectangle in the to left corner)
   var rectBack = paper.rect(0, 0, paperWidth * 0.10, paperHeight * 0.15).attr({
     fill: 'red',
     opacity: 0
@@ -264,7 +265,7 @@ function drawDates(index) {
 }
 
 
-// Dimensions zeichnen
+//function to draw the dimensions screen
 function drawDimensions(index) {
   deleteAll();
   var department = possibleDepartments[index];
@@ -272,7 +273,7 @@ function drawDimensions(index) {
   drawPoints();
 
   function drawPoints() {
-    //Draw Punkte für Department Architektur & Design
+    //draw dots (for the scatter plot) for department Architektur & Design
     if (department == "Architecture & Design") {
       for (var i = 0; i < data.length; i++) {
         if (data[i].department == "Architecture & Design") {
@@ -289,7 +290,7 @@ function drawDimensions(index) {
       }
     }
 
-    //Draw Punkte für Department Drawings
+    //draw dots for department Drawings
     if (department === "Drawings") {
       for (var i = 0; i < data.length; i++) {
         if (data[i].department === "Drawings") {
@@ -306,7 +307,7 @@ function drawDimensions(index) {
       }
     }
 
-    //Draw Punkte für Department Painting & Sculpture
+    //draw dots for department Painting & Sculpture
     if (department === "Painting & Sculpture") {
       for (var i = 0; i < data.length; i++) {
         if (data[i].department === "Painting & Sculpture") {
@@ -323,7 +324,7 @@ function drawDimensions(index) {
       }
     }
 
-    //Draw Punkte für Department Photography
+    //draw dots for department Photography
     if (department === "Photography") {
       for (var i = 0; i < data.length; i++) {
         if (data[i].department == "Photography") {
@@ -341,7 +342,7 @@ function drawDimensions(index) {
     }
   }
 
-  //unsichtbares Rect über dem Screen, welches bei MouseMove abfrägt, wo sich die Maus befindet
+  //invisible rectangle above the screen, which queries where the mouse is located when MouseMove is performed.
   var invisibleRect = paper.rect(0, 0, paperWidth, paperHeight).attr({
     opacity: 0
   });
@@ -354,35 +355,35 @@ function drawDimensions(index) {
 
   var currentSquareMeters = 0;
 
-  //Löscht alle Dimension-Rects
+  //Deletes all Dimension-Rectangles
   function killDimensionRects() {
     paper.selectAll("#dimensionRect").remove();
   }
 
-  //Zeichnet die Dimension-Rects & färbt Punkte neu ein
+  //Draws the dimension rectangles & recolours points
   function drawRects(squaremeters) {
-    //wenn der Quadratmeter, auf dem die Maus ist, nicht den angezeigten Dimension-Rects entspricht...
+    //if the square metre the mouse is on does not correspond to the displayed dimension rects...
     if (currentSquareMeters !== squaremeters) {
-      //...werden alle Dimension-Rects gelöscht
+      //...all dimension rects are deleted
       killDimensionRects();
-      //Alle Punkte werden dunkel eingefärbt
+      //All points are coloured dark
       paper.selectAll("rect").attr({
         fill: colorDark[index]
       });
-      //die mit der Maus ausgewählten Punkte werden hell eingefärbt
+      //the points selected with the mouse are coloured brightly
       paper.selectAll("#m" + squaremeters).attr({
         fill: colorBright[index],
       });
-      //Dimension-Rects werden gemappt und gezeichnet
+      //Dimension Rects are mapped and drawn
       for (var i = 0; i < data.length; i++) {
-        if (data[i]["department"] === department && data[i]["m2"] >= squaremeters && data[i].m2 <= squaremeters + 1) { //angeklickter Bereich
-          var paintWidth = map(data[i].width, 0, 700, 0, paperWidth); //Breite des jeweiligen Kunstwerks
-          var paintHeight = map(data[i].height, 0, 700, 0, paperHeight); //Höhe des jeweiligen Kunstwerks
-          xPos = (paperWidth / 2) - (paintWidth / 2); //Mittelpunkt des jeweiligen Kunstwerks auf der x-Achse
-          yPos = (paperHeight / 2) - (paintHeight / 2); //Mittelpunkt des jeweiligen Kunstwerks auf der y-Achse
+        if (data[i]["department"] === department && data[i]["m2"] >= squaremeters && data[i].m2 <= squaremeters + 1) { //clicked area
+          var paintWidth = map(data[i].width, 0, 700, 0, paperWidth); //width of the respective artwork
+          var paintHeight = map(data[i].height, 0, 700, 0, paperHeight); //height of the respective artwork
+          xPos = (paperWidth / 2) - (paintWidth / 2); //Centre of the respective artwork on the x-axis
+          yPos = (paperHeight / 2) - (paintHeight / 2); //Centre of the respective artwork on the y-axis
 
           if (isOnScreen(paintWidth) && isOnScreen(paintHeight) && isOnScreen(xPos) && isOnScreen(yPos)) {
-            paper.rect(xPos, yPos, paintWidth, paintHeight).attr({ //Rechteck zeichnen
+            paper.rect(xPos, yPos, paintWidth, paintHeight).attr({ //draw rectangles
               stroke: colorBright[index],
               opacity: 0.5,
               strokeWidth: 1,
@@ -392,7 +393,7 @@ function drawDimensions(index) {
           }
         }
       }
-      //ZURÜCK
+      //Go back (transparent clickable rectangle in the to left corner)
       var rectBack = paper.rect(0, 0, paperWidth * 0.10, paperHeight * 0.15).attr({
         fill: 'red',
         opacity: 0
@@ -402,24 +403,22 @@ function drawDimensions(index) {
     currentSquareMeters = squaremeters;
   }
 
-  //um Fehlermeldung zu vermeiden
+  //to avoid error message
   function isOnScreen(val) {
     var isinrange = false;
-    if (val >= 0 && val <= paperWidth) { //dirty
+    if (val >= 0 && val <= paperWidth) {
       isinrange = true;
     }
     return isinrange;
   }
 
-  //Mousemove-Event, zeichnet Dimension-Rects in der ausgewählten Area (Quadratmeter)
+  //Mousemove-Event, draws dimension rects in the selected area (square metres)
   function handleMove(evt) {
     var mouseX = evt.clientX;
     var mouseY = evt.clientY;
-    //  console.log(mouseY);
     var width = map(mouseX, 0, paperWidth, 0, 3);
     var height = map(paperHeight - mouseY, 0, paperHeight, 0, 3);
     var area = width * height;
-    //console.log(area);
     var rectGroup = Math.ceil(area);
     if (rectGroup !== previousRects) {
       drawRects(rectGroup);
@@ -428,13 +427,13 @@ function drawDimensions(index) {
     }
   }
 
-  //Mousedown-Event, entfernt alle Punkte, sodass man nur die Dimension-Rects sieht
+  //Mousedown-Event, removes all points so that you only see the dimension rects
   function handleDown() {
     paper.selectAll(".points").remove();
   }
 
 
-  //Mouseup-Event, färbt alle Punkte wieder hell ein und entfernt die Dimension-Rects
+  //Mouseup-Event, colours all points light again and removes the dimension rectangles
   function handleUp() {
     drawPoints();
     paper.selectAll("rect").attr({
@@ -444,7 +443,7 @@ function drawDimensions(index) {
   }
 }
 
-//Funktion für Zurück-Rechteck oben rechts im Screen
+//Function for "go-back-rectangle" at the top right of the screen
 function goBack() {
   deleteAll();
   drawStartScreen();
