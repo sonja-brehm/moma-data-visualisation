@@ -12,7 +12,7 @@ As the original dataset is very large, I decided to shorten it and keep only the
 - Painting & Sculpture
 - Photography
 
-The data was then compiled into json format.
+The data was then compiled into json format, you can find it [here](https://dl.dropbox.com/s/3i8qx2fyfjx587o/data.js?dl=0).
 
 ## Colour Scheme
 Each department was given a different colour. All of them have roughly the same saturation, work harmoniously together and are still distinguishable from each other.
