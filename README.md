@@ -1,7 +1,9 @@
 # moma-data-visualisation
 
-This project was created during my undergraduate studies in the course "Programmed Design II" from March to June 2019.
+This project was created during my undergraduate studies in the course unit "Programmed Design II" from March to June 2019.
 The task was to program an interactive graphic from a set of data. No pictograms or texts were allowed, meaning you had to use different shapes, sizes or colours to communicate the data.
+
+Unit Tutors: [Prof. Hartmut Bohnacker](https://hartmut-bohnacker.de), [Fabian Rauch](https://www.faebs.com/)
 
 ## Dataset
 I chose the dataset of the [Museum of Modern Art Collection](https://www.kaggle.com/datasets/momanyc/museum-collection). It contains all of MoMA's artworks, their artists, creation date, acquisition date, medium, dimensions, department and classification.
