@@ -187,76 +187,38 @@ function drawStartScreen() {
 function drawDates(index) {
   deleteAll();
   var department = possibleDepartments[index];
-
-  //draw dates for department Architecture & Design
+  //function to draw the dates (=lines) for a specific department
+  function drawDatesForDepartment(department) {
+    for (var i = 0; i < data.length; i++) {
+      if (data[i].department == department) {
+        x1Pos = map(Math.abs(data[i].date), 1840, 2016, 0, paperWidth); //x pos of starting point of the line
+        x2Pos = map(data[i].acquisitionYear, 1840, 2016, 0, paperWidth); //x pos of end point
+        y1Pos = 0;
+        y2Pos = paperHeight;
+        paper.line(x1Pos, y1Pos, x2Pos, y2Pos).attr({
+          fill: colorBright[index],
+          stroke: colorBright[index],
+          strokeWidth: 0.1
+        });
+      }
+    }
+  }
+  
+  //depending on which department was clicked, draw the dates for that department
   if (department == "Architecture & Design") {
-    for (var i = 0; i < data.length; i++) {
-      if (data[i].department == "Architecture & Design") {
-        x1Pos = map(Math.abs(data[i].date), 1840, 2016, 0, paperWidth);
-        x2Pos = map(data[i].acquisitionYear, 1840, 2016, 0, paperWidth);
-        y1Pos = 0;
-        y2Pos = paperHeight;
-        paper.line(x1Pos, y1Pos, x2Pos, y2Pos).attr({
-          fill: colorBright[index],
-          stroke: colorBright[index],
-          strokeWidth: 0.1,
-        });
-      }
-    }
+    drawDatesForDepartment("Architecture & Design");
+  }
+  if (department == "Drawings") {
+    drawDatesForDepartment("Drawings");
+  }
+  if (department == "Painting & Sculpture") {
+    drawDatesForDepartment("Painting & Sculpture");
+  }
+  if (department == "Photography") {
+    drawDatesForDepartment("Photography");
   }
 
-  //draw dates for department Drawings
-  if (department === "Drawings") {
-    for (var i = 0; i < data.length; i++) {
-      if (data[i].department == "Drawings") {
-        x1Pos = map(Math.abs(data[i].date), 1840, 2016, 0, paperWidth);
-        x2Pos = map(data[i].acquisitionYear, 1840, 2016, 0, paperWidth);
-        y1Pos = 0;
-        y2Pos = paperHeight;
-        paper.line(x1Pos, y1Pos, x2Pos, y2Pos).attr({
-          fill: colorBright[index],
-          stroke: colorBright[index],
-          strokeWidth: 0.1
-        });
-      }
-    }
-  }
-
-  //draw dates for department Painting & Sculpture
-  if (department === "Painting & Sculpture") {
-    for (var i = 0; i < data.length; i++) {
-      if (data[i].department == "Painting & Sculpture") {
-        x1Pos = map(Math.abs(data[i].date), 1840, 2016, 0, paperWidth);
-        x2Pos = map(data[i].acquisitionYear, 1840, 2016, 0, paperWidth);
-        y1Pos = 0;
-        y2Pos = paperHeight;
-        paper.line(x1Pos, y1Pos, x2Pos, y2Pos).attr({
-          fill: colorBright[index],
-          stroke: colorBright[index],
-          strokeWidth: 0.1
-        });
-      }
-    }
-  }
-
-  //draw dates for department Photography
-  if (department === "Photography") {
-    for (var i = 0; i < data.length; i++) {
-      if (data[i].department == "Photography") {
-        x1Pos = map(Math.abs(data[i].date), 1840, 2016, 0, paperWidth);
-        x2Pos = map(data[i].acquisitionYear, 1840, 2016, 0, paperWidth);
-        y1Pos = 0;
-        y2Pos = paperHeight;
-        paper.line(x1Pos, y1Pos, x2Pos, y2Pos).attr({
-          fill: colorBright[index],
-          stroke: colorBright[index],
-          strokeWidth: 0.1
-        });
-      }
-    }
-  }
-
-  //Go back (trnsparent clickable rectangle in the to left corner)
+  //Go back (transparent clickable rectangle in the to left corner)
   var rectBack = paper.rect(0, 0, paperWidth * 0.10, paperHeight * 0.15).attr({
     fill: 'red',
     opacity: 0
@@ -272,73 +234,36 @@ function drawDimensions(index) {
 
   drawPoints();
 
+  //function to draw the dots (=points) of the scatter plot
   function drawPoints() {
-    //draw dots (for the scatter plot) for department Architektur & Design
+    function drawPointsForDepartment(department) {
+      for (var i = 0; i < data.length; i++) {
+        if (data[i].department == department) {
+          xPos = map(data[i].width, 0, 300, 0, (paperWidth));
+          yPos = paperHeight - map(data[i].height, 0, 300, 0, paperHeight);
+          size = 2.5;
+          roundedSquareMeters = "m" + Math.ceil(data[i].m2).toString();
+          paper.rect(xPos, yPos, size, size).attr({
+            fill: colorBright[index],
+            id: roundedSquareMeters,
+            class: "points"
+          });
+        }
+      }
+    }
+
+    //depending on which department was clicked, draw the points for that department
     if (department == "Architecture & Design") {
-      for (var i = 0; i < data.length; i++) {
-        if (data[i].department == "Architecture & Design") {
-          xPos = map(data[i].width, 0, 300, 0, (paperWidth));
-          yPos = paperHeight - map(data[i].height, 0, 300, 0, paperHeight);
-          size = 2.5;
-          roundedSquareMeters = "m" + Math.ceil(data[i].m2).toString();
-          paper.rect(xPos, yPos, size, size).attr({
-            fill: colorBright[index],
-            id: roundedSquareMeters,
-            class: "points"
-          });
-        }
-      }
+      drawPointsForDepartment("Architecture & Design");
     }
-
-    //draw dots for department Drawings
-    if (department === "Drawings") {
-      for (var i = 0; i < data.length; i++) {
-        if (data[i].department === "Drawings") {
-          xPos = map(data[i].width, 0, 300, 0, (paperWidth));
-          yPos = paperHeight - map(data[i].height, 0, 300, 0, paperHeight);
-          size = 2.5;
-          roundedSquareMeters = "m" + Math.ceil(data[i].m2).toString();
-          paper.rect(xPos, yPos, size, size).attr({
-            fill: colorBright[index],
-            id: roundedSquareMeters,
-            class: "points"
-          });
-        }
-      }
+    if (department == "Drawings") {
+      drawPointsForDepartment("Drawings");
     }
-
-    //draw dots for department Painting & Sculpture
-    if (department === "Painting & Sculpture") {
-      for (var i = 0; i < data.length; i++) {
-        if (data[i].department === "Painting & Sculpture") {
-          xPos = map(data[i].width, 0, 300, 0, (paperWidth));
-          yPos = paperHeight - map(data[i].height, 0, 300, 0, paperHeight);
-          size = 2.5;
-          roundedSquareMeters = "m" + Math.ceil(data[i].m2).toString();
-          paper.rect(xPos, yPos, size, size).attr({
-            fill: colorBright[index],
-            id: roundedSquareMeters,
-            class: "points"
-          });
-        }
-      }
+    if (department == "Painting & Sculpture") {
+      drawPointsForDepartment("Painting & Sculpture");
     }
-
-    //draw dots for department Photography
-    if (department === "Photography") {
-      for (var i = 0; i < data.length; i++) {
-        if (data[i].department == "Photography") {
-          xPos = map(data[i].width, 0, 300, 0, (paperWidth));
-          yPos = paperHeight - map(data[i].height, 0, 300, 0, paperHeight);
-          size = 2.5;
-          roundedSquareMeters = "m" + Math.ceil(data[i].m2).toString();
-          paper.rect(xPos, yPos, size, size).attr({
-            fill: colorBright[index],
-            id: roundedSquareMeters,
-            class: "points"
-          });
-        }
-      }
+    if (department == "Photography") {
+      drawPointsForDepartment("Photography");
     }
   }
 
