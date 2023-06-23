@@ -52,7 +52,6 @@ A screen recording can be found here: https://vimeo.com/422341899
 
 ## Setup
 To run the code, you need to download the following library files and place them in a "lib" folder:
-- [chroma.min.js](https://gka.github.io/chroma.js/#installation)
 - [gmynd.js](https://github.com/hfg-gmuend/gmynd)
 - [snap.svg-min](http://snapsvg.io)
 
